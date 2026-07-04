@@ -1,0 +1,31 @@
+[project]
+name = "economic-dispatch"
+version = "0.1.2"
+description = "Single-turn power-systems economic dispatch RL environment for verifiers / Prime Intellect Environments Hub. Closed-form merit-order ground truth, cross-checked against scipy.optimize.linprog; cost reward hard-gated on feasibility."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "JWilksBooth" }]
+license = { text = "MIT" }
+keywords = [
+    "reinforcement-learning", "rl-environment", "verifiers", "power-systems",
+    "economic-dispatch", "merit-order", "verifiable-rewards",
+]
+tags = ["single-turn", "power-systems", "optimization", "train", "eval"]
+dependencies = ["verifiers>=0.1.14", "datasets"]
+
+[project.optional-dependencies]
+test = ["scipy"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["economic_dispatch.py", "pyproject.toml"]
+
+[tool.hatch.build.targets.wheel]
+include = ["economic_dispatch.py"]
+
+[tool.verifiers.eval]
+num_examples = 50
+rollouts_per_example = 3
