@@ -17,7 +17,7 @@ import json
 import random
 import re
 
-__version__ = "0.1.2"  # 0.1.0 was the lost June 2 build; logic identical to spec
+__version__ = "0.1.3"  # 0.1.0 was the lost June 2 build; logic identical to spec
 
 DEFAULT_NUM_EXAMPLES = 300
 
@@ -117,7 +117,9 @@ def parse_answer(completion: str, inst: dict) -> dict[str, float] | None:
     for raw in reversed(re.findall(r"\{[^{}]+\}", completion, re.DOTALL)):
         try:
             obj = json.loads(raw)
-        except json.JSONDecodeError:
+        # ValueError covers JSONDecodeError AND CPython's >4300-digit int limit;
+        # RecursionError covers deeply nested brackets. Both must skip, not crash.
+        except (ValueError, RecursionError):
             continue
         if (isinstance(obj, dict) and set(obj.keys()) == names
                 and all(_is_finite_number(v) for v in obj.values())):

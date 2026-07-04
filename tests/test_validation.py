@@ -53,14 +53,18 @@ print(f"gate 4 (feasible suboptimal): PASS — partial credit {r:.3f}")
 
 # NaN/Infinity attack: json accepts these literals; NaN defeats comparison-based
 # checks (every comparison is False). Must score 0 on every reward.
+# '9'*5000 exceeds CPython's 4300-digit int-string limit -> plain ValueError
+# from json.loads (not JSONDecodeError); bracket bomb -> RecursionError. No crash.
 names = [u["name"] for u in inst["units"]]
-for bad in ("NaN", "Infinity", "-Infinity"):
+for bad in ("NaN", "Infinity", "-Infinity", "9" * 5000):
     a = "{" + ", ".join(f'"{n}": {bad}' for n in names) + "}"
-    assert reward_format(a, inst) == 0.0, f"{bad}: format gate broken"
-    assert reward_power_balance(a, inst) == 0.0, f"{bad}: balance gate broken"
-    assert reward_limits(a, inst) == 0.0, f"{bad}: limits gate broken"
-    assert reward_cost(a, inst, oc) == 0.0, f"{bad}: cost gate broken"
-print("gate 5 (NaN/Infinity attack): PASS — all rewards 0.0")
+    assert reward_format(a, inst) == 0.0, f"{bad[:12]}: format gate broken"
+    assert reward_power_balance(a, inst) == 0.0, f"{bad[:12]}: balance gate broken"
+    assert reward_limits(a, inst) == 0.0, f"{bad[:12]}: limits gate broken"
+    assert reward_cost(a, inst, oc) == 0.0, f"{bad[:12]}: cost gate broken"
+bomb = '{' + f'"{names[0]}": ' + "[" * 2000 + "]" * 2000 + "}"
+assert reward_format(bomb, inst) == 0.0 and reward_cost(bomb, inst, oc) == 0.0
+print("gate 5 (NaN/Infinity/huge-int/bracket-bomb attack): PASS — all rewards 0.0, no crash")
 
 # tolerance-rent attack: shave 0.499 MW off the priciest dispatched unit —
 # stays inside the 0.5 MW feasibility tolerance but costs LESS than the

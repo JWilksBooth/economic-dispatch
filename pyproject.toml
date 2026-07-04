@@ -1,6 +1,6 @@
 [project]
 name = "economic-dispatch"
-version = "0.1.2"
+version = "0.1.3"
 description = "Single-turn power-systems economic dispatch RL environment for verifiers / Prime Intellect Environments Hub. Closed-form merit-order ground truth, cross-checked against scipy.optimize.linprog; cost reward hard-gated on feasibility."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -28,4 +28,4 @@ include = ["economic_dispatch.py"]
 
 [tool.verifiers.eval]
 num_examples = 50
-rollouts_per_example = 3
+rollouts_per_example = 1
