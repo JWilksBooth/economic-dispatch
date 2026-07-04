@@ -17,7 +17,7 @@ import json
 import random
 import re
 
-__version__ = "0.1.1"  # 0.1.0 was the lost June 2 build; logic identical to spec
+__version__ = "0.1.2"  # 0.1.0 was the lost June 2 build; logic identical to spec
 
 DEFAULT_NUM_EXAMPLES = 300
 

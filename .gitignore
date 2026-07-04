@@ -8,3 +8,4 @@ dist/
 venv/
 *.egg
 .DS_Store
+outputs/
