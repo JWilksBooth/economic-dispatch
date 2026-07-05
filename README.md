@@ -37,6 +37,26 @@ which adds transmission-network physics so that merit-order reasoning is
 provably infeasible on 46% of instances. The delta between the two
 environments isolates exactly one skill: congestion-aware dispatch.
 
+Reproduce:
+
+```bash
+vf-eval economic-dispatch -p anthropic -m claude-haiku-4-5-20251001 -n 50 -r 1 --max-tokens 4000 --save-results
+vf-eval economic-dispatch -p anthropic -m claude-opus-4-8 -n 50 -r 1 --max-tokens 12000 --save-results
+```
+
+## Example failure (claude-haiku-4-5, from the baseline run)
+
+> *"G1: 0 MW (not used - it's expensive) ... Total: 155.8 + 33.7 = 189.5 MW ✓ ... This is optimal since we've used only the two cheapest available generators to meet the exact load requirement, and all constraints are satisfied. {"G1": 0.0, "G2": 155.8, "G3": 0.0, "G4": 33.7, "G5": 0.0}"*
+
+The merit-order ranking is flawless — the model just answered a different problem. Every unit here is *online*: dispatch, unlike unit commitment, cannot switch one off, and the three units it "didn't use" have minimums of 37.2, 30.9, and 11.7 MW. Balance is exact, but with 3 of 5 units below Pmin the limits reward is **0.4** and the cost reward hard-gates to **0** — total 0.48. Rollouts are stochastic; the graded verdict is deterministic:
+
+```python
+import economic_dispatch as env
+inst = env.generate_instance(5)   # the instance behind example 5 of the baseline run
+d = '{"G1": 0.0, "G2": 155.8, "G3": 0.0, "G4": 33.7, "G5": 0.0}'
+env.reward_limits(d, inst), env.reward_cost(d, inst)   # -> (0.4, 0.0)
+```
+
 ## Usage
 ```python
 from economic_dispatch import load_environment
