@@ -1,6 +1,6 @@
 # economic-dispatch
 
-Single-turn power-systems economic dispatch RL environment for the `verifiers` library / Prime Intellect Environments Hub. Faithful rebuild of the June 2026 design; the control rung of a three-environment vertical.
+Single-turn power-systems economic dispatch RL environment for the `verifiers` library / Prime Intellect Environments Hub. Faithful rebuild of the June 2026 design; the control rung of a power-systems vertical.
 
 ## Task
 Given online generators — each with a linear cost ($/MWh) and operating range [Pmin, Pmax] — and a system load (MW), output the least-cost dispatch as JSON: `{"G1": 12.3, "G2": 80.0, ...}` such that total generation equals load and every unit respects its range.
@@ -68,8 +68,12 @@ vf-eval economic-dispatch -m <model> -n 50
 ```
 
 ## The vertical
-This is the control rung. Two successors defeat exactly the merit-order reasoning it rewards:
+This is the control rung. Its successors defeat exactly the merit-order reasoning it rewards:
 - [dcopf-grid-verifiers](https://github.com/JWilksBooth/dcopf-grid-verifiers) — DC optimal power flow with line limits; 46% of instances make the network-unconstrained merit-order dispatch infeasible (congestion / space).
 - [multiperiod-dispatch](https://github.com/JWilksBooth/multiperiod-dispatch) — ramp-limited multi-period dispatch; 74% defeat per-period merit order (ramp coupling / time).
+- [n1-contingency-dispatch](https://github.com/JWilksBooth/n1-contingency-dispatch) — N-1 security-constrained DC-OPF; 68% defeat the plain OPF optimum (security / uncertainty).
+- [nodal-pricing-lmp](https://github.com/JWilksBooth/nodal-pricing-lmp) — LMP dual-space pricing; 44% of instances price some bus outside the offer band (price formation / dual space).
 
-Next: N-1 contingency-secure dispatch; LMP/nodal pricing verified against LP duals.
+Robotics vertical (same validation discipline): [robot-cycle-time](https://github.com/JWilksBooth/robot-cycle-time) (motion), [bimanual-chore-scheduling](https://github.com/JWilksBooth/bimanual-chore-scheduling) (orchestration).
+
+Next: unit-commitment / storage arbitrage.
